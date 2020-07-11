@@ -1,27 +1,20 @@
-const config=require('./config');
-const twit=require('twit');
+var Twit = require('twit');
+var config = require('./config');
+var T = new Twit(config);
+var params = {
+	screen_name: '@nestle',
+	count: 1,
+};
+T.get('statuses/user_timeline', params)
+	.then((response) => {
+		const userName = response.data[0].user.screen_name;
+        const tweetId = response.data[0].id_str;
+        console.log('YES')
+		// T.post('statuses/update', {
+		// 	status: '@nestle err, boop?',
+		// 	in_reply_to_status_id: tweetId,
+		// 	username: userName,
+		// }).catch((error) => console.log('UH OH', error));
+	})
+	.catch((error) => console.log('UH OH', error));
 
-const Twit = new twit(config);
-
-function retweet() {
-    let params={
-        q: '#nestle',
-        result_type: 'recent',
-        count: 100,
-
-    }
-    Twit.get('search/tweets', params,(err, data, response)=>
-    {
-        let tweets=data.statuses
-        if(!err) {
-            for(let dat of tweets) {
-                let retweetId = dat.id_str;
-                Twit.post('statuses/retweet/:id', {id: retweetId}, (err, response)=>{
-                    if(response) console.log('retweeted: ', retweetId);
-                    if (err) console.log('UH OH');
-                })
-            }
-        }
-    })
-}
-setInterval(retweet, 15000);
